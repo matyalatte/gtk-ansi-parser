@@ -1,3 +1,24 @@
+# text files
+*.txt
+!changelog.txt
+!meson_options.txt
+
+# scripts
+*.bat
+*.sh
+*.ps1
+
+# built files
+build
+subprojects
+!subprojects/gtest.wrap
+
+# coverage report
+coverage-report
+*.png
+*.css
+*.html
+
 # Prerequisites
 *.d
 

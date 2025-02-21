@@ -1,0 +1,2 @@
+option('demo', type : 'boolean', value : true, description : 'Build demo app')
+option('tests', type : 'boolean', value : true, description : 'Build tests')
