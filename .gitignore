@@ -6,6 +6,7 @@
 # scripts
 *.bat
 *.sh
+!demo.sh
 *.ps1
 
 # built files

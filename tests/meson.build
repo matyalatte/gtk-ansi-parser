@@ -10,8 +10,9 @@ if test_os == 'windows'
 endif
 
 test_exe = executable('uint_test',
-    'main.cpp',
+    ['main.cpp', 'test_append.cpp'],
     cpp_args: test_cpp_args,
+    include_directories: include_directories('../src'),
     dependencies : [gtkansi_dep, gtest_dep, gmock_dep],
     install : false)
 

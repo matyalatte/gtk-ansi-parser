@@ -1,5 +1,5 @@
-#ifndef INCLUDE_GTK_ANSI_H_
-#define INCLUDE_GTK_ANSI_H_
+#ifndef __GTK_ANSI_PARSER_INCLUDE_GTK_ANSI_H__
+#define __GTK_ANSI_PARSER_INCLUDE_GTK_ANSI_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -170,12 +170,12 @@ _GTKA_EXTERN void gtk_ansi_append(GtkAnsiParser* parser, const char* text);
 
 /**
  * Appends a line feed to buffer.
- * It's a little bit faster than `gtk_ansi_append(buffer, "\n")`
+ * It's a little bit faster than `gtk_ansi_append(parser, "\n")`
  *
  * @param parser GtkAnsiParser instance.
  * @memberof GtkAnsiParser
  */
-_GTKA_EXTERN void gtk_ansi_append_line_feed(GtkAnsiParser *buffer);
+_GTKA_EXTERN void gtk_ansi_append_line_feed(GtkAnsiParser *parser);
 
 /**
  * Removes the first bytes from the text buffer.
@@ -194,10 +194,10 @@ _GTKA_EXTERN int gtk_ansi_remove_first_bytes(GtkAnsiParser* parser, int n);
  * @param parser GtkAnsiParser instance.
  * @memberof GtkAnsiParser
  */
-_GTKA_EXTERN void gtk_ansi_reset_tags(GtkAnsiParser *buffer);
+_GTKA_EXTERN void gtk_ansi_reset_tags(GtkAnsiParser *parser);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // INCLUDE_GTK_ANSI_H_
+#endif  // __GTK_ANSI_PARSER_INCLUDE_GTK_ANSI_H__

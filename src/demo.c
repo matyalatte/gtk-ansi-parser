@@ -1,28 +1,21 @@
 #include "gtk_ansi.h"
 
 static void demo(GtkAnsiParser* parser) {
-    gtk_ansi_append(parser, "???this is the first line\n");
-    gtk_ansi_append(parser, "\033[31mHello, GTK!\rWhat\033[0m\n");
-    gtk_ansi_append(parser, "\033[30;47mblack\033[0m\n");
-    gtk_ansi_append(parser, "\033[31;46mred\033[0m\n");
-    gtk_ansi_append(parser, "\033[32;45mgreen\033[0m\n");
-    gtk_ansi_append(parser, "\033[33;44myellow\033[0m\n");
-    gtk_ansi_append(parser, "\033[34;43mblue\033[0m\n");
-    gtk_ansi_append(parser, "\033[35;42mmagenta\033[0m\n");
-    gtk_ansi_append(parser, "\033[36;41mcyan\033[0m\n");
-    gtk_ansi_append(parser, "\033[37;40mwhite\033[0m\n");
-    gtk_ansi_append(parser, "\033[30;47mblack\033[0m\n");
-    gtk_ansi_append(parser, "\033[91;106mred\033[0m\n");
-    gtk_ansi_append(parser, "\033[92;105mgreen\033[0m\n");
-    gtk_ansi_append(parser, "\033[93;104myellow\033[0m\n");
-    gtk_ansi_append(parser, "\033[94;103mblue\033[0m\n");
-    gtk_ansi_append(parser, "\033[95;102mmagenta\033[0m\n");
-    gtk_ansi_append(parser, "\033[96;101mcyan\033[0m\n");
-    gtk_ansi_append(parser, "\033[97;100mwhite\033[0m\n");
-    gtk_ansi_append(parser, "\033[1;3;4;9mdeco\033[0m\n");
-    gtk_ansi_append(parser, "test\033[0m\nmessage\nhello\n");
-    gtk_ansi_append(parser, "what\rwhy you.\n");
-    gtk_ansi_remove_first_bytes(parser, 3);
+    // Shows the same ansi strings as demo.sh
+    for (int y = 0; y < 16; y++) {
+        for (int x = 0; x < 16; x++) {
+            char str[18];
+            sprintf(str, "\033[48;5;%dm  \033[0m", y * 16 + x);
+            str[17] = 0;
+            gtk_ansi_append(parser, str);
+        }
+        gtk_ansi_append_line_feed(parser);
+    }
+    gtk_ansi_append(parser, "\033[1mBold\033[0m\033[3mItalic\033[0m");
+    gtk_ansi_append(parser, "\033[4mUnderline\033[0m\n");
+    gtk_ansi_append(parser, "\033[9mStrikethrough\033[0m");
+    gtk_ansi_append(parser, "\033[7mReverse\033[0m\033[8mConceal\033[0m\n");
+    gtk_ansi_append(parser, "0123456789abcdefghjklmn\rCarriage returns!\n");
 }
 
 static void activate(GtkApplication *app, gpointer user_data) {
@@ -35,7 +28,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     // Create a new window
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), "GtkAnsiParser Demo");
-    gtk_window_set_default_size(GTK_WINDOW(window), 400, 300);
+    gtk_window_set_default_size(GTK_WINDOW(window), 300, 360);
 
     // Create a scrolled window
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -47,9 +40,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
 
     // Use monospace font
     GtkStyleContext* widget = gtk_widget_get_style_context(text_view);
-	gboolean has_monospace = gtk_style_context_has_class(widget, "monospace");
-	if (!has_monospace)
-		gtk_style_context_add_class(widget, "monospace");
+	gtk_style_context_add_class(widget, "monospace");
 
     // Make GtkAnsiParser
     GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
