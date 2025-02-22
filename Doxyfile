@@ -926,6 +926,7 @@ WARN_LOGFILE           =
 
 INPUT                  = ./include/gtk_ansi.h \
                          ./docs/README.md \
+                         ./docs/ANSIcodes.md \
                          ./docs/Doxygen.md
 
 # This tag can be used to specify the character encoding of the source files
