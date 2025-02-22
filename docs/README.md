@@ -32,6 +32,11 @@ g_object_unref(buffer);
 gtk_ansi_free(parser);
 ```
 
+## Documentation
+
+[gtk-ansi-parser: GtkAnsiParser Struct Reference](https://matyalatte.github.io/gtk-ansi-parser/struct_gtk_ansi_parser.html)  
+[gtk-ansi-parser: include/gtk_ansi.h File Reference](https://matyalatte.github.io/gtk-ansi-parser/gtk__ansi_8h.html)  
+
 ## Building
 
 ### Requirements

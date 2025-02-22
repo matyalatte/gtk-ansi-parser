@@ -5,7 +5,7 @@ static void demo(GtkAnsiParser* parser) {
     for (int y = 0; y < 16; y++) {
         for (int x = 0; x < 16; x++) {
             char str[18];
-            sprintf(str, "\033[48;5;%dm  \033[0m", y * 16 + x);
+            snprintf(str, sizeof(str), "\033[48;5;%dm  \033[0m", y * 16 + x);
             str[17] = 0;
             gtk_ansi_append(parser, str);
         }
@@ -40,7 +40,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
 
     // Use monospace font
     GtkStyleContext* widget = gtk_widget_get_style_context(text_view);
-	gtk_style_context_add_class(widget, "monospace");
+    gtk_style_context_add_class(widget, "monospace");
 
     // Make GtkAnsiParser
     GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
@@ -55,8 +55,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     demo(ansi_parser);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     GtkApplication *app;
     int status;
 

@@ -13,7 +13,7 @@ struct AnsiCase {
 
 // Test Fixture for GtkAnsiParser
 class AnsiTest : public ::testing::TestWithParam<AnsiCase> {
-protected:
+ protected:
     GtkAnsiParser* parser;
     GtkTextBuffer* text_buffer;
 

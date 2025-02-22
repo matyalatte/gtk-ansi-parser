@@ -73,7 +73,7 @@ _GTKA_EXTERN void gtk_ansi_free(GtkAnsiParser* parser);
  * @param parser GtkAnsiParser instance.
  * @memberof GtkAnsiParser
  */
- _GTKA_EXTERN void gtk_ansi_init(GtkAnsiParser* parser);
+_GTKA_EXTERN void gtk_ansi_init(GtkAnsiParser* parser);
 
 /**
  * Sets the max length of the text buffer. The default value is 1 MiB (1048576).

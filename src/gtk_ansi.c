@@ -68,10 +68,12 @@ void gtk_ansi_init(GtkAnsiParser* parser) {
     parser->CursorPos = 0;
     parser->LineStartPos = 0;
     parser->MaxLength = 1024 * 1024;
-    strcpy(parser->FgColorDefault, COLORS[ANSI_COLOR_BLACK]);
-    strcpy(parser->BgColorDefault, COLORS[ANSI_COLOR_BRIGHT_WHITE]);
-    strcpy(parser->FgColorCustom, "#ffffff");
-    strcpy(parser->BgColorCustom, "#ffffff");
+    snprintf(parser->FgColorDefault, sizeof(parser->FgColorDefault),
+             "%s", COLORS[ANSI_COLOR_BLACK]);
+    snprintf(parser->BgColorDefault, sizeof(parser->BgColorDefault),
+             "%s", COLORS[ANSI_COLOR_BRIGHT_WHITE]);
+    snprintf(parser->FgColorCustom, sizeof(parser->FgColorCustom), "#ffffff");
+    snprintf(parser->BgColorCustom, sizeof(parser->BgColorCustom), "#ffffff");
     gtk_ansi_reset_tags(parser);
 }
 
@@ -98,7 +100,8 @@ void gtk_ansi_set_default_color(
     if (!parser)
         return;
     char* color = is_bg ? parser->BgColorDefault : parser->FgColorDefault;
-    sprintf(color, "#%02x%02x%02x", r % 256, g % 256, b % 256);
+    snprintf(color, sizeof(parser->BgColorDefault),
+             "#%02x%02x%02x", r % 256, g % 256, b % 256);
 }
 
 static int str_to_uint8_unsafe(const char* str) {
@@ -414,7 +417,8 @@ static AnsiCode read_ansi_code(const char* text, int* len) {
 
 static void set_custom_rgb(GtkAnsiParser* parser, AnsiCode code, int r, int g, int b) {
     char* color = code == ANSI_FG_CUSTOM ? parser->FgColorCustom : parser->BgColorCustom;
-    sprintf(color, "#%02x%02x%02x", r % 256, g % 256, b % 256);
+    snprintf(color, sizeof(parser->FgColorCustom),
+             "#%02x%02x%02x", r % 256, g % 256, b % 256);
 }
 
 void gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
@@ -426,7 +430,6 @@ void gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
 
     while (*p) {
         if (*p == '\033' && *(p + 1) == '[') {  // Found an ANSI escape sequence
-            // NOLINTNEXTLINE(readability/casting)
             gtk_ansi_append_text_base(parser, start, (int)(p - start));
 
             const char *q = p + 2;  // Skip "\033["
@@ -472,9 +475,11 @@ void gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
                         if (color_code < 16) {
                             // color_code is a preset id
                             if (code == ANSI_FG_CUSTOM)
-                                strcpy(parser->FgColorCustom, COLORS[color_code]);
+                                snprintf(parser->FgColorCustom, sizeof(parser->FgColorCustom),
+                                         "%s", COLORS[color_code]);
                             else
-                                strcpy(parser->BgColorCustom, COLORS[color_code]);
+                                snprintf(parser->BgColorCustom, sizeof(parser->BgColorCustom),
+                                         "%s", COLORS[color_code]);
                         } else if (color_code < 232) {
                             // 0 <= r, g, b < 6
                             // color_code = 16 + 36 * r + 6 * g + b
@@ -498,7 +503,6 @@ void gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
             }
             continue;
         } else if (*p == '\r' || *p == '\n' || *p == '\a' || *p == '\033') {
-            // NOLINTNEXTLINE(readability/casting)
             gtk_ansi_append_text_base(parser, start, (int)(p - start));
             if (*p == '\r')
                 parser->CursorPos = parser->LineStartPos;
@@ -508,6 +512,5 @@ void gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
         }
         p++;
     }
-    // NOLINTNEXTLINE(readability/casting)
     gtk_ansi_append_text_base(parser, start, (int)(p - start));
 }
