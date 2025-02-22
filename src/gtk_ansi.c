@@ -490,7 +490,7 @@ void gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
                             set_custom_rgb(parser, code, r, g, b);
                         } else {
                             // 0 <= g < 24
-                            // color_code = 232 + 24 * g
+                            // color_code = 232 + g
                             r = g = b = 255 * (color_code - 232) / 23;
                             set_custom_rgb(parser, code, r, g, b);
                         }

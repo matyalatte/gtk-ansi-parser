@@ -7,7 +7,7 @@ The following sequences should work as you expected with GtkAnsiParser.
 | Code | Reset Code | Effect |
 | -- | -- | -- |
 | `\r` | | Carriage return |
-| `\033[0m` | | reset all styles |
+| `\033[0m` | | Reset all styles |
 | `\033[1m` | `\033[22m` | Bold |
 | `\033[3m` | `\033[23m` | Italic |
 | `\033[4m` | `\033[24m` | Underline |
