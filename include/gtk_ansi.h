@@ -1,11 +1,11 @@
 #ifndef __GTK_ANSI_PARSER_INCLUDE_GTK_ANSI_H__
 #define __GTK_ANSI_PARSER_INCLUDE_GTK_ANSI_H__
 
+#include <gtk/gtk.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <gtk/gtk.h>
 
 // Export APIs when shared build
 #ifndef _GTKA_EXTERN
