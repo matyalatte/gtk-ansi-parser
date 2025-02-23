@@ -22,7 +22,7 @@ The following sequences should work as you expected with GtkAnsiParser.
 ## Partially Supported Sequences
 
 The following sequences might not work as you expected but GtkAnsiParser can detect them.
-Also, some of them requires `gtk_ansi_set_default_color()` to get the default fore and back colors.
+And some of them require `gtk_ansi_set_default_color()` to get the default fore and back colors.
 
 | Code | Reset Code | Effect |
 | -- | -- | -- |

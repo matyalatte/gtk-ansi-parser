@@ -14,12 +14,20 @@ You can use most of the graphics modes (`\033[*m`) and carriage returns to displ
 ## Example
 
 ```c
-// Allocate memory
-GtkTextBuffer* buffer = gtk_text_buffer_new(nullptr);
+// Create objects
+GtkWidget *text_view = gtk_text_view_new();
+GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
 GtkAnsiParser* parser = gtk_ansi_new(buffer);
+
+// Use monospace font
+GtkStyleContext* widget = gtk_widget_get_style_context(text_view);
+gtk_style_context_add_class(widget, "monospace");
 
 // GtkAnsiParser removes the first bytes when the buffer size exceeds 512KiB.
 gtk_ansi_set_max_length(parser, 512 * 1024);
+
+// Copies the color settings from the text view.
+gtk_ansi_set_default_color_with_textview(parser, GTK_TEXT_VIEW(text_view));
 
 // Append ANSI strings.
 gtk_ansi_append(parser, "\033[1mBold\033[0m\n");
@@ -28,7 +36,7 @@ gtk_ansi_append(parser, "\033[38;2;0;255;0mGreen\033[0m\n");
 gtk_ansi_append(parser, "Carriage return\rOverwrite\n");
 
 // Free memory
-g_object_unref(buffer);
+g_object_unref(text_view);
 gtk_ansi_free(parser);
 ```
 
