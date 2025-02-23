@@ -68,12 +68,10 @@ void gtk_ansi_init(GtkAnsiParser* parser) {
     parser->CursorPos = 0;
     parser->LineStartPos = 0;
     parser->MaxLength = 1024 * 1024;
-    snprintf(parser->FgColorDefault, sizeof(parser->FgColorDefault),
-             "%s", COLORS[ANSI_COLOR_BLACK]);
-    snprintf(parser->BgColorDefault, sizeof(parser->BgColorDefault),
-             "%s", COLORS[ANSI_COLOR_BRIGHT_WHITE]);
-    snprintf(parser->FgColorCustom, sizeof(parser->FgColorCustom), "#ffffff");
-    snprintf(parser->BgColorCustom, sizeof(parser->BgColorCustom), "#ffffff");
+    memcpy(parser->FgColorDefault, COLORS[ANSI_COLOR_BLACK], 8);
+    memcpy(parser->BgColorDefault, COLORS[ANSI_COLOR_BRIGHT_WHITE], 8);
+    memcpy(parser->FgColorCustom, "#ffffff", 8);
+    memcpy(parser->BgColorCustom, "#ffffff", 8);
     gtk_ansi_reset_tags(parser);
 }
 
@@ -505,11 +503,9 @@ void gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
                         if (color_code < 16) {
                             // color_code is a preset id
                             if (code == ANSI_FG_CUSTOM)
-                                snprintf(parser->FgColorCustom, sizeof(parser->FgColorCustom),
-                                         "%s", COLORS[color_code]);
+                                memcpy(parser->FgColorCustom, COLORS[color_code], 8);
                             else
-                                snprintf(parser->BgColorCustom, sizeof(parser->BgColorCustom),
-                                         "%s", COLORS[color_code]);
+                                memcpy(parser->BgColorCustom, COLORS[color_code], 8);
                         } else if (color_code < 232) {
                             // 0 <= r, g, b < 6
                             // color_code = 16 + 36 * r + 6 * g + b
