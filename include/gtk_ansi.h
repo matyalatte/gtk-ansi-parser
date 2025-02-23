@@ -118,6 +118,17 @@ _GTKA_EXTERN void gtk_ansi_set_default_color(
     GtkAnsiParser* parser, int is_bg, int r, int g, int b);
 
 /**
+ * Copies the default fore and back colors from a text view.
+ * Reversed or hidden characters (with `\033[7m` or `\033[8m`]) use them.
+ *
+ * @param parser GtkAnsiParser instance.
+ * @param view GtkTextView instance.
+ * @memberof GtkAnsiParser
+ */
+_GTKA_EXTERN void gtk_ansi_set_default_color_with_textview(
+    GtkAnsiParser* parser, GtkTextView* view);
+
+/**
  * Gets the default foreground or background color.
  * You can use NULL if you don't need one of them.
  *

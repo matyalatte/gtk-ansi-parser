@@ -117,6 +117,36 @@ TEST(AnsiNullTest, DefaultColorNull) {
     gtk_ansi_get_default_color(NULL, 0, &r, &g, &b);
 }
 
+TEST_F(AnsiTest, DefaultColorWithTextView) {
+    GtkWidget *text_view = gtk_text_view_new();
+
+    GtkCssProvider *css_provider = gtk_css_provider_new();
+    gtk_css_provider_load_from_data(css_provider,
+        "textview {\n"
+        "    color: #FF0000;\n"
+        "    background-color: #0000FF;\n"
+        "}",
+        -1, NULL);
+
+    GtkStyleContext *context = gtk_widget_get_style_context(text_view);
+    gtk_style_context_add_provider(context,
+        GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+    gtk_ansi_set_default_color_with_textview(parser, GTK_TEXT_VIEW(text_view));
+
+    g_object_unref(text_view);
+
+    int r, g, b;
+    gtk_ansi_get_default_color(parser, 0, &r, &g, &b);
+    ASSERT_EQ(r, 255);
+    ASSERT_EQ(g, 0);
+    ASSERT_EQ(b, 0);
+    gtk_ansi_get_default_color(parser, 1, &r, &g, &b);
+    ASSERT_EQ(r, 0);
+    ASSERT_EQ(g, 0);
+    ASSERT_EQ(b, 255);
+}
+
 TEST_F(AnsiTest, ResetTags) {
     ASSERT_EQ(parser->UseUnderline, 0);
     ASSERT_EQ(parser->FgColor, nullptr);

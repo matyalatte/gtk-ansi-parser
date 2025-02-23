@@ -104,6 +104,36 @@ void gtk_ansi_set_default_color(
              "#%02x%02x%02x", r % 256, g % 256, b % 256);
 }
 
+#define D2I(n) (int)(n * 255)
+
+void gtk_ansi_set_default_color_with_textview(
+        GtkAnsiParser* parser, GtkTextView* view) {
+    if (!parser || !view)
+        return;
+    GtkStyleContext *context = gtk_widget_get_style_context(GTK_WIDGET(view));
+    if (!context)
+        return;
+
+    // Get foreground color
+    GdkRGBA color;
+    gtk_style_context_get_color(context, GTK_STATE_FLAG_NORMAL, &color);
+    gtk_ansi_set_default_color(parser, 0, D2I(color.red), D2I(color.green), D2I(color.blue));
+
+    // Get background color
+    // Note: Using gtk_style_context_* does not work with some gtk themes.
+    //       So, we render 1x1 window and read a pixel.
+    cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
+    cairo_t *cr = cairo_create(surface);
+    gtk_render_background(context, cr, 0, 0, 1, 1);
+    unsigned char *data = cairo_image_surface_get_data(surface);
+    unsigned char blue = data[0];
+    unsigned char green = data[1];
+    unsigned char red = data[2];
+    cairo_destroy(cr);
+    cairo_surface_destroy(surface);
+    gtk_ansi_set_default_color(parser, 1, red, green, blue);
+}
+
 static int str_to_uint8_unsafe(const char* str) {
     int n = 0;
     for (int i = 0; i < 2; i++) {

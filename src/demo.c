@@ -45,6 +45,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     // Make GtkAnsiParser
     GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
     GtkAnsiParser *ansi_parser = gtk_ansi_new(buf);
+    gtk_ansi_set_default_color_with_textview(ansi_parser, GTK_TEXT_VIEW(text_view));
 
     // Add TextView to the scrolled window
     gtk_container_add(GTK_CONTAINER(scrolled_window), text_view);
