@@ -189,8 +189,6 @@ const AnsiCase ansi_cases_unsupported[] = {
     { "\033[=19hSetMode", "SetMode", 0, nullptr },
     { "\033[M", "", 0, nullptr },
     { "\033[0;68;\"DIR\";13pKey", "Key", 0, nullptr},
-    { "\033[;", "", 0, nullptr },
-    { "\033[", "", 0, nullptr },
 };
 
 INSTANTIATE_TEST_SUITE_P(AnsiTestInstantiationUnsupported,
@@ -199,12 +197,43 @@ INSTANTIATE_TEST_SUITE_P(AnsiTestInstantiationUnsupported,
 
 TEST_P(AnsiTest, AppendText) {
     const AnsiCase test_case = GetParam();
-    gtk_ansi_append(parser, test_case.ansi);
+    const char* rest = gtk_ansi_append(parser, test_case.ansi);
 
+    ASSERT_STREQ(rest, "");
     CheckText(test_case.plain);
 
     CheckTagSize(test_case.tag_size);
     CheckTag(test_case.tag_name);
+}
+
+TEST_F(AnsiTest, AppendTextIncomplete) {
+    const char* rest;
+    rest = gtk_ansi_append(parser, "\033[0;68;\"DIR\";13");
+    EXPECT_STREQ(rest, "\033[0;68;\"DIR\";13");
+    CheckText("");
+    rest = gtk_ansi_append(parser, "\033[0;68;\"DIR");
+    EXPECT_STREQ(rest, "\033[0;68;\"DIR");
+    CheckText("");
+    rest = gtk_ansi_append(parser, "\033[0;32");
+    EXPECT_STREQ(rest, "\033[0;32");
+    CheckText("");
+    CheckTagSize(0);
+    rest = gtk_ansi_append(parser, "\033[;");
+    ASSERT_STREQ(rest, "\033[;");
+    CheckText("");
+    CheckTagSize(0);
+    rest = gtk_ansi_append(parser, "\033[");
+    ASSERT_STREQ(rest, "\033[");
+    CheckText("");
+    CheckTagSize(0);
+    rest = gtk_ansi_append(parser, "\033");
+    ASSERT_STREQ(rest, "\033");
+    CheckText("");
+    CheckTagSize(0);
+    rest = gtk_ansi_append(parser, "aaa\033[");
+    ASSERT_STREQ(rest, "\033[");
+    CheckText("aaa");
+    CheckTagSize(0);
 }
 
 TEST_F(AnsiTest, AppendTextTagDup) {

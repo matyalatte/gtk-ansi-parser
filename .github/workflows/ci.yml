@@ -25,7 +25,7 @@ jobs:
       - run: pip3 install cpplint==1.6.1 codespell
       - run: |
           cpplint --recursive --quiet .
-          codespell -S "docs,build,coverage-report,subprojects"
+          codespell -S "html,build,coverage-report,subprojects"
 
   test:
     name: test-${{ matrix.os }}

@@ -175,9 +175,12 @@ _GTKA_EXTERN GtkTextBuffer* gtk_ansi_get_text_buffer(GtkAnsiParser* parser);
  *
  * @param parser GtkAnsiParser instance.
  * @param text A pointer to a string
+ * @returns The last bytes of text when they are incomplete sequences.
+ *          An empty string otherwise.
+ *          For example, when you call `gtk_ansi_append(parser, "hello\033[")`, it returns `\033[`.
  * @memberof GtkAnsiParser
  */
-_GTKA_EXTERN void gtk_ansi_append(GtkAnsiParser* parser, const char* text);
+_GTKA_EXTERN const char* gtk_ansi_append(GtkAnsiParser* parser, const char* text);
 
 /**
  * Appends a line feed to buffer.
