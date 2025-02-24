@@ -573,12 +573,14 @@ const char* gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
                     break;
             }
             continue;
-        } else if (*p == '\r' || *p == '\n' || *p == '\a') {
+        } else if ('\a' <= *p && *p <= '\r' && *p != '\t') {
             gtk_ansi_append_text_base(parser, start, (int)(p - start));
-            if (*p == '\r')
-                parser->CursorPos = parser->LineStartPos;
-            else if (*p == '\n')
+            if (*p == '\b')
+                parser->CursorPos -= parser->CursorPos > parser->LineStartPos;
+            else if ('\n' <= *p && *p <= '\f')  // \n \v \f
                 gtk_ansi_append_line_feed(parser);
+            else if (*p == '\r')
+                parser->CursorPos = parser->LineStartPos;
             start = p + 1;
         }
         p++;

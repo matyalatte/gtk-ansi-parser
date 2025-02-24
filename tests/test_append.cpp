@@ -195,6 +195,24 @@ INSTANTIATE_TEST_SUITE_P(AnsiTestInstantiationUnsupported,
     AnsiTest,
     ::testing::ValuesIn(ansi_cases_unsupported));
 
+const AnsiCase ansi_cases_control_chars[] = {
+    { "\a", "", 0, nullptr },
+    { "aaa\tbbb", "aaa\tbbb", 0, nullptr },
+    { "aaa\rc\nbbb", "caa\nbbb", 0, nullptr },
+    { "aaa\rc\vbbb", "caa\nbbb", 0, nullptr },
+    { "aaa\rc\fbbb", "caa\nbbb", 0, nullptr },
+    { "abc\rd", "dbc", 0, nullptr },
+    { "\ba", "a", 0, nullptr },
+    { "a\bb", "b", 0, nullptr },
+    { "abc\bd", "abd", 0, nullptr },
+    { "a\b\nb", "a\nb", 0, nullptr },
+    { "a\n\bb", "a\nb", 0, nullptr },
+};
+
+INSTANTIATE_TEST_SUITE_P(AnsiTestInstantiationControlChars,
+    AnsiTest,
+    ::testing::ValuesIn(ansi_cases_control_chars));
+
 TEST_P(AnsiTest, AppendText) {
     const AnsiCase test_case = GetParam();
     const char* rest = gtk_ansi_append(parser, test_case.ansi);
