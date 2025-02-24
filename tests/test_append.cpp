@@ -22,10 +22,17 @@ const AnsiCase ansi_cases_style[] = {
     // Bold
     { "\033[1mBold", "Bold", 1, "bo" },
     { "\033[1;0mBold", "Bold", 0, nullptr },
-    { "\033[1;2mBold", "Bold", 0, nullptr },
     { "\033[1;22mBold", "Bold", 0, nullptr },
     { "\033[1;23mBold", "Bold", 1, "bo" },
-    { "\033[2mFaint", "Faint", 0, nullptr },  // unsupported
+
+    // Faint
+    { "\033[2mFaint", "Faint", 1, "fg#000000" },
+    { "\033[38;2;128;64;32;2mFaint", "Faint", 1, "fg#402010" },
+    { "\033[2;0mFaint", "Faint", 0, nullptr },
+    { "\033[2;22mFaint", "Faint", 0, nullptr },
+    { "\033[2;23mFaint", "Faint", 1, "fg#000000" },
+    { "\033[1;2;22mFaint", "Faint", 0, nullptr },
+    { "\033[1;2mBoldFaint", "BoldFaint", 2, "bo" },
 
     // Italic
     { "\033[3mItalic", "Italic", 1, "it" },
@@ -204,7 +211,7 @@ const AnsiCase ansi_cases_control_chars[] = {
     { "abc\rd", "dbc", 0, nullptr },
     { "\ba", "a", 0, nullptr },
     { "a\bb", "b", 0, nullptr },
-    { "abc\bd", "abd", 0, nullptr },
+    { "abc\bde", "abde", 0, nullptr },
     { "a\b\nb", "a\nb", 0, nullptr },
     { "a\n\bb", "a\nb", 0, nullptr },
 };

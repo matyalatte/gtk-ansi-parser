@@ -6,7 +6,7 @@ The following sequences should work as you expected with GtkAnsiParser.
 
 | Code | Reset Code | Effect |
 | -- | -- | -- |
-| `\b` | | Move cursor to left |
+| `\b` | | Moves cursor to left |
 | `\r` | | Carriage return |
 | `\033[0m` | | Reset all styles |
 | `\033[1m` | `\033[22m` | Bold |
@@ -30,7 +30,7 @@ And some of them require `gtk_ansi_set_default_color()` to get the default fore 
 | `\a` | | Ignores itself |
 | `\v` | | Line feed |
 | `\f` | | Line feed |
-| `\033[2m` | `\033[22m` | Disables bold fonts |
+| `\033[2m` | `\033[22m` | Reduces intensity by 50% |
 | `\033[7m` | `\033[27m` | Swaps fore and back colors |
 | `\033[8m` | `\033[28m` | Uses back color as fore color |
 | Other `\033[*` patterns | | Ignores itself |

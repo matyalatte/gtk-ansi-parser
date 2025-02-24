@@ -51,6 +51,7 @@ void gtk_ansi_reset_tags(GtkAnsiParser* parser) {
     if (!parser)
         return;
     parser->UseBold = 0;
+    parser->UseFaint = 0;
     parser->UseReverse = 0;
     parser->UseItalic = 0;
     parser->UseUnderline = 0;
@@ -243,6 +244,18 @@ static void gtk_ansi_apply_tags(GtkAnsiParser* parser, GtkTextIter* start, GtkTe
 
     const char* fgColor = parser->FgColor;
     const char* bgColor = parser->BgColor;
+    char fgColorFainted[8];
+    if (parser->UseFaint) {
+        if (!fgColor)
+            fgColor = parser->FgColorDefault;
+        int r, g, b;
+        r = str_to_uint8_unsafe(fgColor + 1);
+        g = str_to_uint8_unsafe(fgColor + 3);
+        b = str_to_uint8_unsafe(fgColor + 5);
+        snprintf(fgColorFainted, sizeof(fgColorFainted),
+            "#%02x%02x%02x", r / 2, g / 2, b / 2);
+        fgColor = fgColorFainted;
+    }
     if (parser->UseReverse) {
         // swap fg and bg colors
         if (!fgColor)
@@ -364,50 +377,54 @@ void gtk_ansi_append_line_feed(GtkAnsiParser* parser) {
 // Enables an ANSI code for the next appended characters.
 // Returns ANSI_INVALID if you use an unsupported code.
 static AnsiCode gtk_ansi_enable_tag_by_ansi(GtkAnsiParser* parser, AnsiCode code) {
-    if (code == ANSI_RESET)
+    if (code == ANSI_RESET) {
         gtk_ansi_reset_tags(parser);
-    else if (code == ANSI_BOLD)
+    } else if (code == ANSI_BOLD) {
         parser->UseBold = 1;
-    else if (code == ANSI_FAINT || code == ANSI_NO_BOLD_FAINT)
+    } else if (code == ANSI_FAINT) {
+        parser->UseFaint = 1;
+    } else if (code == ANSI_NO_BOLD_FAINT) {
         parser->UseBold = 0;
-    else if (code == ANSI_ITALIC)
+        parser->UseFaint = 0;
+    } else if (code == ANSI_ITALIC) {
         parser->UseItalic = 1;
-    else if (code == ANSI_NO_ITALIC)
+    } else if (code == ANSI_NO_ITALIC) {
         parser->UseItalic = 0;
-    else if (code == ANSI_UNDERLINE)
+    } else if (code == ANSI_UNDERLINE) {
         parser->UseUnderline = 1;
-    else if (code == ANSI_NO_UNDERLINE)
+    } else if (code == ANSI_NO_UNDERLINE) {
         parser->UseUnderline = 0;
-    else if (code == ANSI_STRIKETHROUGH)
+    } else if (code == ANSI_STRIKETHROUGH) {
         parser->UseStrikethrough = 1;
-    else if (code == ANSI_NO_STRIKETHROUGH)
+    } else if (code == ANSI_NO_STRIKETHROUGH) {
         parser->UseStrikethrough = 0;
-    else if (code == ANSI_REVERSE)
+    } else if (code == ANSI_REVERSE) {
         parser->UseReverse = 1;
-    else if (code == ANSI_NO_REVERSE)
+    } else if (code == ANSI_NO_REVERSE) {
         parser->UseReverse = 0;
-    else if (code == ANSI_CONCEAL)
+    } else if (code == ANSI_CONCEAL) {
         parser->UseConceal = 1;
-    else if (code == ANSI_NO_CONCEAL)
+    } else if (code == ANSI_NO_CONCEAL) {
         parser->UseConceal = 0;
-    else if (ANSI_FG_BLACK <= code && code <= ANSI_FG_WHITE)
+    } else if (ANSI_FG_BLACK <= code && code <= ANSI_FG_WHITE) {
         parser->FgColor = COLORS[code - ANSI_FG_BLACK];
-    else if (ANSI_BG_BLACK <= code && code <= ANSI_BG_WHITE)
+    } else if (ANSI_BG_BLACK <= code && code <= ANSI_BG_WHITE) {
         parser->BgColor = COLORS[code - ANSI_BG_BLACK];
-    else if (ANSI_FG_BRIGHT_BLACK <= code && code <= ANSI_FG_BRIGHT_WHITE)
+    } else if (ANSI_FG_BRIGHT_BLACK <= code && code <= ANSI_FG_BRIGHT_WHITE) {
         parser->FgColor = COLORS[code - ANSI_FG_BRIGHT_BLACK + ANSI_COLOR_BRIGHT_BLACK];
-    else if (code == ANSI_FG_CUSTOM)
+    } else if (code == ANSI_FG_CUSTOM) {
         parser->FgColor = parser->FgColorCustom;
-    else if (code == ANSI_FG_RESET)
+    } else if (code == ANSI_FG_RESET) {
         parser->FgColor = NULL;
-    else if (ANSI_BG_BRIGHT_BLACK <= code && code <= ANSI_BG_BRIGHT_WHITE)
+    } else if (ANSI_BG_BRIGHT_BLACK <= code && code <= ANSI_BG_BRIGHT_WHITE) {
         parser->BgColor = COLORS[code - ANSI_BG_BRIGHT_BLACK + ANSI_COLOR_BRIGHT_BLACK];
-    else if (code == ANSI_BG_CUSTOM)
+    } else if (code == ANSI_BG_CUSTOM) {
         parser->BgColor = parser->BgColorCustom;
-    else if (code == ANSI_BG_RESET)
+    } else if (code == ANSI_BG_RESET) {
         parser->BgColor = NULL;
-    else
+    } else {
         return ANSI_INVALID;
+    }
     return code;
 }
 

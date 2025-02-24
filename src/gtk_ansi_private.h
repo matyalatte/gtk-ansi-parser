@@ -103,6 +103,7 @@ struct GtkAnsiParser {
 
     // Style flags
     unsigned int UseBold : 1;
+    unsigned int UseFaint : 1;
     unsigned int UseReverse : 1;
     unsigned int UseItalic : 1;
     unsigned int UseUnderline : 1;
