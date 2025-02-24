@@ -5,7 +5,7 @@ project('gtk-ansi-parser', 'c',
         'c_std=c99',                    # strict C99
         'cpp_std=c++11',                # strict C++11
     ],
-    version: '0.1.0')
+    version: '0.2.0')
 
 # set source files
 gtkansi_sources = ['src/gtk_ansi.c']

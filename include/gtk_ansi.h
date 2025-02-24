@@ -21,8 +21,8 @@ extern "C" {
 #endif  // _GTKA_EXTERN
 
 // Version info
-#define GTKA_VERSION "0.1.0"
-#define GTKA_VERSION_INT 100
+#define GTKA_VERSION "0.2.0"
+#define GTKA_VERSION_INT 200
 
 /**
  * Gets the version of gtk-ansi-parser.
