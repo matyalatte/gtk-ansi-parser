@@ -295,6 +295,8 @@ int gtk_ansi_remove_first_bytes(GtkAnsiParser* parser, int n) {
 static int gtk_ansi_overwrite_text(GtkAnsiParser* parser, const char* text, int len) {
     if (parser->Length - parser->CursorPos < len)
         len = parser->Length - parser->CursorPos;
+    if (len <= 0)
+        return 0;
 
     GtkTextIter start, end;
 
@@ -322,7 +324,7 @@ static void gtk_ansi_append_text_base(GtkAnsiParser* parser, const char* text, i
         text += overwrite_len;
         len -= overwrite_len;
     }
-    if (len == 0)
+    if (len <= 0)
         return;
 
     if (parser->Length + len > parser->MaxLength) {
