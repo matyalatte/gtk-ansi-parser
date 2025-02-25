@@ -39,11 +39,16 @@ GtkAnsiParser* gtk_ansi_new(GtkTextBuffer* buffer) {
 
     parser->Buffer = buffer;
     parser->TagTable = gtk_text_buffer_get_tag_table(buffer);
+    parser->BlinkFuncId = 0;
+    parser->BlinkTag = NULL;
+    parser->BlinkVisible = 0;
     gtk_ansi_init(parser);
     return parser;
 }
 
 void gtk_ansi_free(GtkAnsiParser* parser) {
+    if (parser->BlinkFuncId)
+        g_source_remove(parser->BlinkFuncId);
     g_free(parser);
 }
 
@@ -52,6 +57,7 @@ void gtk_ansi_reset_tags(GtkAnsiParser* parser) {
         return;
     parser->UseBold = 0;
     parser->UseFaint = 0;
+    parser->UseBlink = 0;
     parser->UseReverse = 0;
     parser->UseItalic = 0;
     parser->UseUnderline = 0;
@@ -186,7 +192,23 @@ GtkTextBuffer* gtk_ansi_get_text_buffer(GtkAnsiParser* parser) {
     return parser->Buffer;
 }
 
-static GtkTextTag* create_tag(GtkTextBuffer* buffer, const char* name, const char* color) {
+gboolean toggle_blink(gpointer data) {
+    GtkAnsiParser* parser = (GtkAnsiParser *)data;
+
+    // Change foreground color for blinking
+    parser->BlinkVisible = !parser->BlinkVisible;
+    if (!parser->BlinkTag)
+        return TRUE;
+    if (parser->BlinkVisible)
+        g_object_set(parser->BlinkTag, "foreground", parser->BgColorDefault, "foreground-set", TRUE, NULL);
+    else
+        g_object_set(parser->BlinkTag, "foreground-set", FALSE, NULL);
+
+    return TRUE;
+}
+
+static GtkTextTag* create_tag(GtkAnsiParser* parser, const char* name, const char* color) {
+    GtkTextBuffer* buffer = parser->Buffer;
     GtkTextTag *new_tag = NULL;
     char c = name[0];
     char c2 = name[1];
@@ -199,12 +221,20 @@ static GtkTextTag* create_tag(GtkTextBuffer* buffer, const char* name, const cha
     } else if (c == 'u') {
         new_tag = gtk_text_buffer_create_tag(
             buffer, name, "underline", PANGO_UNDERLINE_SINGLE, NULL);
+    } else if (c == 'b' && c2 == 'l') {
+        new_tag = gtk_text_buffer_create_tag(
+            buffer, name, NULL);
+        parser->BlinkTag = new_tag;
+        if (!parser->BlinkFuncId)
+            parser->BlinkFuncId = g_timeout_add(600, toggle_blink, parser);
     } else if (c == 's') {
         new_tag = gtk_text_buffer_create_tag(
             buffer, name, "strikethrough", TRUE, NULL);
     } else if (c == 'f') {
         new_tag = gtk_text_buffer_create_tag(
             buffer, name, "foreground", color, NULL);
+        // Use the lowest priority to prioritize the blinking tag
+        gtk_text_tag_set_priority(new_tag, 0);
     } else if (c == 'b' && c2 == 'g') {
         new_tag = gtk_text_buffer_create_tag(
             buffer, name, "background", color, NULL);
@@ -225,7 +255,7 @@ static void gtk_ansi_apply_tag_base(GtkAnsiParser* parser,
     }
     GtkTextTag* tag = gtk_text_tag_table_lookup(parser->TagTable, name);
     if (!tag)
-        tag = create_tag(parser->Buffer, name, color);
+        tag = create_tag(parser, name, color);
     if (!tag)
         return;
     gtk_text_buffer_apply_tag(parser->Buffer, tag, start, end);
@@ -239,6 +269,8 @@ static void gtk_ansi_apply_tags(GtkAnsiParser* parser, GtkTextIter* start, GtkTe
         gtk_ansi_apply_tag_base(parser, "it", NULL, start, end);
     if (parser->UseUnderline)
         gtk_ansi_apply_tag_base(parser, "un", NULL, start, end);
+    if (parser->UseBlink)
+        gtk_ansi_apply_tag_base(parser, "bl", NULL, start, end);
     if (parser->UseStrikethrough)
         gtk_ansi_apply_tag_base(parser, "st", NULL, start, end);
 
@@ -394,6 +426,10 @@ static AnsiCode gtk_ansi_enable_tag_by_ansi(GtkAnsiParser* parser, AnsiCode code
         parser->UseUnderline = 1;
     } else if (code == ANSI_NO_UNDERLINE) {
         parser->UseUnderline = 0;
+    } else if (code == ANSI_BLINK || code == ANSI_RAPID_BLINK) {
+        parser->UseBlink = 1;
+    } else if (code == ANSI_NO_BLINK) {
+        parser->UseBlink = 0;
     } else if (code == ANSI_STRIKETHROUGH) {
         parser->UseStrikethrough = 1;
     } else if (code == ANSI_NO_STRIKETHROUGH) {

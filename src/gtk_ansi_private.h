@@ -16,12 +16,15 @@ enum {
     ANSI_FAINT             = 2,
     ANSI_ITALIC            = 3,
     ANSI_UNDERLINE         = 4,
+    ANSI_BLINK             = 5,
+    ANSI_RAPID_BLINK       = 6,
     ANSI_REVERSE           = 7,
     ANSI_CONCEAL           = 8,
     ANSI_STRIKETHROUGH     = 9,
     ANSI_NO_BOLD_FAINT     = 22,
     ANSI_NO_ITALIC         = 23,
     ANSI_NO_UNDERLINE      = 24,
+    ANSI_NO_BLINK          = 25,
     ANSI_NO_REVERSE        = 27,
     ANSI_NO_CONCEAL        = 28,
     ANSI_NO_STRIKETHROUGH  = 29,
@@ -104,11 +107,17 @@ struct GtkAnsiParser {
     // Style flags
     unsigned int UseBold : 1;
     unsigned int UseFaint : 1;
+    unsigned int UseBlink : 1;
     unsigned int UseReverse : 1;
     unsigned int UseItalic : 1;
     unsigned int UseUnderline : 1;
     unsigned int UseStrikethrough : 1;
     unsigned int UseConceal : 1;
+
+    // Parameters for blinking
+    guint BlinkFuncId;
+    GtkTextTag* BlinkTag;
+    unsigned int BlinkVisible : 1;
 
     // Some color name buffers ("#rrggbb")
     const char* FgColor;     // Current fg color

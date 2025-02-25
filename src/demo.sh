@@ -10,5 +10,6 @@ for y in {0..15}; do
 done
 
 echo -e "\033[1mBold\033[0m\033[3mItalic\033[0m\033[4mUnderline\033[0m"
+echo -e "\033[31;5mRedBlink\033[0m\033[31;2mRedFaint\033[0m"
 echo -e "\033[9mStrikethrough\033[0m\033[7mReverse\033[0m\033[8mConceal\033[0m"
 echo -e "0123456789abcdefghjklmn\rCarriage returns!"

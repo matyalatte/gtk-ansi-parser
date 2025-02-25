@@ -47,9 +47,11 @@ const AnsiCase ansi_cases_style[] = {
     { "\033[4;0mUnderline", "Underline", 0, nullptr },
 
     // Blink
-    { "\033[5mBlink", "Blink", 0, nullptr },  // unsupported
-    { "\033[5;25mBlink", "Blink", 0, nullptr },  // unsupported
-    { "\033[6mRapidBlink", "RapidBlink", 0, nullptr },  // unsupported
+    { "\033[5mBlink", "Blink", 1, "bl" },
+    { "\033[6mRapidBlink", "RapidBlink", 1, "bl" },
+    { "\033[5;25mBlink", "Blink", 0, nullptr },
+    { "\033[5;0mBlink", "Blink", 0, nullptr },
+    { "\033[6;25mRapidBlink", "RapidBlink", 0, nullptr },
 
     // Reverse
     { "\033[7mReverse", "Reverse", 2, "fg#ffffff" },

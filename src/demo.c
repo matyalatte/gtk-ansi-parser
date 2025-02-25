@@ -13,6 +13,7 @@ static void demo(GtkAnsiParser* parser) {
     }
     gtk_ansi_append(parser, "\033[1mBold\033[0m\033[3mItalic\033[0m");
     gtk_ansi_append(parser, "\033[4mUnderline\033[0m\n");
+    gtk_ansi_append(parser, "\033[31;5mRedBlink\033[0m\033[31;2mRedFaint\033[0m\n");
     gtk_ansi_append(parser, "\033[9mStrikethrough\033[0m");
     gtk_ansi_append(parser, "\033[7mReverse\033[0m\033[8mConceal\033[0m\n");
     gtk_ansi_append(parser, "0123456789abcdefghjklmn\rCarriage returns!\n");
