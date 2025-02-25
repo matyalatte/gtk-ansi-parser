@@ -200,7 +200,8 @@ gboolean toggle_blink(gpointer data) {
     if (!parser->BlinkTag)
         return TRUE;
     if (parser->BlinkVisible)
-        g_object_set(parser->BlinkTag, "foreground", parser->BgColorDefault, "foreground-set", TRUE, NULL);
+        g_object_set(parser->BlinkTag, "foreground",
+                     parser->BgColorDefault, "foreground-set", TRUE, NULL);
     else
         g_object_set(parser->BlinkTag, "foreground-set", FALSE, NULL);
 
@@ -545,6 +546,69 @@ static void set_custom_color(GtkAnsiParser* parser, AnsiCode code, const char* n
     copy_color(color, new_color);
 }
 
+static int read_custom_color(
+        GtkAnsiParser* parser, AnsiCode code,
+        const char* p, int* len) {
+    const char* start = p;
+    if (*p++ == 'm') {
+        *len = (int)(p - start);
+        return 1;
+    }
+    int l;
+    int r, g, b;
+    int mode = read_ansi_code(p, &l);
+    p += l;
+    if (mode == 2) {
+        // \033[38;2;{r};{g};{b}m
+        if (*p++ == 'm') {
+            *len = (int)(p - start);
+            return 1;
+        }
+        r = read_ansi_code(p, &l);
+        p += l;
+        if (*p++ == 'm') {
+            *len = (int)(p - start);
+            return 1;
+        }
+        g = read_ansi_code(p, &l);
+        p += l;
+        if (*p++ == 'm') {
+            *len = (int)(p - start);
+            return 1;
+        }
+        b = read_ansi_code(p, &l);
+        p += l;
+        set_custom_rgb(parser, code, r, g, b);
+    } else if (mode == 5) {
+        // \033[38;5;{c}m
+        if (*p++ == 'm') {
+            *len = (int)(p - start);
+            return 1;
+        }
+        int color_code = read_ansi_code(p, &l);
+        p += l;
+        if (color_code < 16) {
+            // color_code is a preset id
+            set_custom_color(parser, code, COLORS[color_code]);
+        } else if (color_code < 232) {
+            // 0 <= r, g, b < 6
+            // color_code = 16 + 36 * r + 6 * g + b
+            color_code -= 16;
+            r = 255 * (color_code / 36) / 5;
+            g = 255 * (color_code / 6 % 6) / 5;
+            b = 255 * (color_code % 6) / 5;
+            set_custom_rgb(parser, code, r, g, b);
+        } else {
+            // 0 <= g < 24
+            // color_code = 232 + g
+            r = g = b = 255 * (color_code - 232) / 23;
+            set_custom_rgb(parser, code, r, g, b);
+        }
+    }
+    *len = (int)(p - start);
+    return 0;
+}
+
 const char* gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
     if (!parser || !text)
         return "";
@@ -575,50 +639,11 @@ const char* gtk_ansi_append(GtkAnsiParser* parser, const char* text) {
                 q += len;
 
                 if (code == ANSI_FG_CUSTOM || code == ANSI_BG_CUSTOM) {
-                    if (*q++ == 'm')
-                        break;
-                    int r, g, b;
-                    int mode = read_ansi_code(q, &len);
+                    // Read 2;{r};{g};{b} or 5;{id}
+                    int ret = read_custom_color(parser, code, q, &len);
                     q += len;
-                    if (mode == 2) {
-                        // \033[38;2;{r};{g};{b}m
-                        if (*q++ == 'm')
-                            break;
-                        r = read_ansi_code(q, &len);
-                        q += len;
-                        if (*q++ == 'm')
-                            break;
-                        g = read_ansi_code(q, &len);
-                        q += len;
-                        if (*q++ == 'm')
-                            break;
-                        b = read_ansi_code(q, &len);
-                        q += len;
-                        set_custom_rgb(parser, code, r, g, b);
-                    } else if (mode == 5) {
-                        // \033[38;5;{c}m
-                        if (*q++ == 'm')
-                            break;
-                        int color_code = read_ansi_code(q, &len);
-                        q += len;
-                        if (color_code < 16) {
-                            // color_code is a preset id
-                            set_custom_color(parser, code, COLORS[color_code]);
-                        } else if (color_code < 232) {
-                            // 0 <= r, g, b < 6
-                            // color_code = 16 + 36 * r + 6 * g + b
-                            color_code -= 16;
-                            r = 255 * (color_code / 36) / 5;
-                            g = 255 * (color_code / 6 % 6) / 5;
-                            b = 255 * (color_code % 6) / 5;
-                            set_custom_rgb(parser, code, r, g, b);
-                        } else {
-                            // 0 <= g < 24
-                            // color_code = 232 + g
-                            r = g = b = 255 * (color_code - 232) / 23;
-                            set_custom_rgb(parser, code, r, g, b);
-                        }
-                    }
+                    if (ret)  // failed to parse the custom color
+                        break;
                 }
                 gtk_ansi_enable_tag_by_ansi(parser, code);
 
