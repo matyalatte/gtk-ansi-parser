@@ -43,6 +43,10 @@ TEST(AnsiNullTest, InitNull) {
     gtk_ansi_init(NULL);
 }
 
+TEST(AnsiNullTest, FreeNull) {
+    gtk_ansi_free(NULL);
+}
+
 TEST_F(AnsiTest, MaxLength) {
     ASSERT_EQ(gtk_ansi_get_max_length(parser), 1024 * 1024);
     gtk_ansi_set_max_length(parser, 256);

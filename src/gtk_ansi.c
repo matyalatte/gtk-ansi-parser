@@ -47,6 +47,8 @@ GtkAnsiParser* gtk_ansi_new(GtkTextBuffer* buffer) {
 }
 
 void gtk_ansi_free(GtkAnsiParser* parser) {
+    if (!parser)
+        return;
     if (parser->BlinkFuncId)
         g_source_remove(parser->BlinkFuncId);
     g_free(parser);
