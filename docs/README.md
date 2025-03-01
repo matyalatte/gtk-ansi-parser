@@ -94,3 +94,7 @@ executable('your_exe_name', ['your_code.cpp'], dependencies : [gtkansi_dep])
 meson setup build -Dgtk_ansi_parser:tests=false -Dgtk_ansi_parser:demo=false
 meson compile -C build
 ```
+
+## Projects Which Use gtk-ansi-parser
+
+- [Tuw](https://github.com/matyalatte/tuw): A tiny GUI wrapper for command-line tools.
